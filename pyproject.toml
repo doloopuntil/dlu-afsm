@@ -1,0 +1,108 @@
+# Python package and dependency management via Poetry, see https://python-poetry.org/docs/
+# For details about the configuration https://python-poetry.org/docs/configuration/.
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "dlu-afsm"
+version = "0.1.0"
+description = "dlu-afsm is a simple decorator-based finite state machine compatible with attrs and dataclasses."
+authors = ["Daniele Masato <masato.daniele@gmail.com>"]
+readme = "README.md"
+packages = [
+    { include = "afsm", from = "src" }
+]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+[tool.poetry.group.test.dependencies]
+pytest = "^7.0.0"
+pytest-mock = "*"
+pytest-cov = "*"
+pytest-flake8 = "*"
+pytest-mypy = "*"
+pytest-pylint = "*"
+attrs = "^22.1.0"
+
+
+[tool.poetry.group.lint.dependencies]
+mypy = "^0.981"
+pylint = "^2.15.0"
+black = "^22.1.0"
+isort = "^5.0.0"
+
+# Scalable and readable testing using pytest, see https://docs.pytest.org/.
+# For details about the configuration see https://docs.pytest.org/en/latest/reference/customize.html.
+[tool.pytest.ini_options]
+testpaths = [
+    "tests"
+]
+console_output_style = "count"
+
+# Scalable and readable testing tatic type-checking for type-annotated code using mypy, see https://mypy.readthedocs.io.
+# For details about the configuration see https://mypy.readthedocs.io/en/latest/config_file.html.
+[tool.mypy]
+python_version = "3.10"
+mypy_path = ["src", "tests"]
+namespace_packages = false
+show_error_codes = true
+strict = true
+
+[[tool.mypy.overrides]]
+module = "fsm.*"
+
+[[tool.mypy.overrides]]
+module = "test_fsm.*"
+
+# Code style validation for source packages using Pylint, see https://pylint.pycqa.org.
+# For details about the configuration see https://pylint.pycqa.org/en/latest/user_guide/checkers/features.html.
+# This configuration follows the the recommendations in https://pythonspeed.com/articles/pylint.
+[tool.pylint.main]
+py-version = "3.10"
+
+[tool.pylint.format]
+max-line-length = 120
+max-module-lines = 500
+ignore-long-lines = "^\\s*(# )?<?https?://\\S+>?$|# type: ignore(\\[.+\\])?$"
+
+[tool.pylint.imports]
+allow-wildcard-with-all = false
+
+[tool.pylint.design]
+min-public-methods = 1
+
+[tool.pylint.typecheck]
+ignored-classes = [
+    "optparse.Values",
+    "thread._local",
+    "_thread._local",
+    "argparse.Namespace",
+]
+
+[tool.pylint.classes]
+valid-metaclass-classmethod-first-arg = ["mcs"]
+
+[tool.pylint.reports]
+evaluation = "10.0 * max(0, 1.0 - (5.0 * error + 2.0 * warning + refactor + convention) / statement)"
+
+[tool.pylint.logging]
+enable = ["useless-suppression"]
+
+# Automatic uncompromising code formatting using black, see https://black.readthedocs.io/.
+# For details about the configuration https://black.readthedocs.io/en/stable/usage_and_configuration/the_basics.html.
+[tool.black]
+target-version = ["py310"]
+line-length = 120
+
+# Automatic alphabetic import sorting by type using isort, see https://pycqa.github.io/isort/.
+# For details about the configuration https://pycqa.github.io/isort/docs/configuration/options.html.
+[tool.isort]
+py_version = 38
+line_length = 120
+known_first_party = ["fsm"]
+combine_as_imports = true
+# Ensure compatibility with black, see https://pycqa.github.io/isort/docs/configuration/black_compatibility.html
+profile = "black"
+skip_gitignore = true
