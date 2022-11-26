@@ -15,9 +15,15 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.8"
+
+[tool.poetry.group.dev.dependencies]
+pylint = "^2.15.0"
+black = "^22.1.0"
+isort = "^5.0.0"
 
 [tool.poetry.group.test.dependencies]
+mypy = "^0.981"
 pytest = "^7.0.0"
 pytest-mock = "*"
 pytest-cov = "*"
@@ -25,13 +31,6 @@ pytest-flake8 = "*"
 pytest-mypy = "*"
 pytest-pylint = "*"
 attrs = "^22.1.0"
-
-
-[tool.poetry.group.lint.dependencies]
-mypy = "^0.981"
-pylint = "^2.15.0"
-black = "^22.1.0"
-isort = "^5.0.0"
 
 # Scalable and readable testing using pytest, see https://docs.pytest.org/.
 # For details about the configuration see https://docs.pytest.org/en/latest/reference/customize.html.
