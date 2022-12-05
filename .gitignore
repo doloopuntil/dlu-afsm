@@ -1,22 +1,15 @@
+# pyenv configuration
+.python-version
+
+# poetry virtual environemnt
+.pyenv/
+
 # Byte-compiled and optimised sources
 __pycache__/
 *.py[co]
 
-# Distribution and packaging artefacts
-dist/
-
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Unit test reports and coverage reports
-.pytest_cache/
-
-# Sphinx documentation
-docs/_build/
-
-# pyenv configuration
-.python-version
+# macOS metadata
+.DS_Store
 
 # Idea project settings
 .idea/
@@ -24,5 +17,11 @@ docs/_build/
 # mypy type-checking cache
 .mypy_cache/
 
-# macOS metadata
-.DS_Store
+# Unit test reports and coverage reports
+.pytest_cache/
+
+# Sphinx documentation
+docs/_build/
+
+# Distribution and packaging artefacts
+dist/
