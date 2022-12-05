@@ -18,9 +18,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu, macos, windows]
-        os-version: [latest]
-        python-version: ["3.8", "3.9", "3.10", "3.11"]
+        os:
+          - ubuntu
+          - macos
+          - windows
+        os-version:
+          - latest
+        python-version:
+          - "3.8"
+          - "3.9"
+          - "3.10"
+          - "3.11"
         include:
           - poetry-directory: $HOME/.local/bin
           - os: windows
@@ -48,9 +56,6 @@ jobs:
 
       - name: Add poetry to PATH
         run: echo "${{ matrix.poetry-directory }}" >> $GITHUB_PATH
-
-      - name: Configure poetry
-        run: poetry config virtualenvs.in-project true
 
       - name: Set up cache
         uses: actions/cache@v3
