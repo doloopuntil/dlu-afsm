@@ -19,9 +19,9 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - ubuntu
-          - macos
-          - windows
+          - Ubuntu
+          - macOS
+          - Windows
         os-version:
           - latest
         python-version:
@@ -31,7 +31,7 @@ jobs:
           - "3.11"
         include:
           - poetry-directory: $HOME/.local/bin
-          - os: windows
+          - os: Windows
             poetry-directory: $APPDATA\Python\Scripts
 
     defaults:

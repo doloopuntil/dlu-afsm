@@ -32,14 +32,15 @@ python = "^3.8"
 pre-commit = "^2.20"
 pre-commit-hooks = "*"
 rstcheck = "^6.1"
+isort = "^5.0"
 black = "^22.1"
 blacken-docs = "^1.12"
-isort = "^5.0"
 pylint = "^2.15"
 mypy = "^0"
 bandit = "^1.7"
 
 [tool.poetry.group.test.dependencies]
+tox = "^4.0.0rc1"
 pytest = "^7.0"
 pytest-mock = "*"
 pytest-cov = "*"
@@ -48,28 +49,22 @@ pytest-mypy = "*"
 pytest-pylint = "*"
 attrs = ">=21"  # Modern APIs, see https://www.attrs.org/en/stable/names.html
 
-# Use pytest for scalable and readable testing, see https://docs.pytest.org/.
-# For details about the configuration see https://docs.pytest.org/en/latest/reference/customize.html.
-[tool.pytest.ini_options]
-testpaths = [
-    "tests"
-]
-console_output_style = "count"
+# Use isort for automated, alphabetical import sorting by type, see https://pycqa.github.io/isort/.
+# For details about the configuration https://pycqa.github.io/isort/docs/configuration/options.html.
+[tool.isort]
+py_version = 38
+line_length = 120
+known_first_party = ["afsm"]
+combine_as_imports = true
+skip_gitignore = true
+# Ensure compatibility with black, see https://pycqa.github.io/isort/docs/configuration/black_compatibility.html
+profile = "black"
 
-# Use mypy for static code type-checking on type-annotated code, see https://mypy.readthedocs.io.
-# For configuration details, see https://mypy.readthedocs.io/en/latest/config_file.html.
-[tool.mypy]
-python_version = "3.8"
-mypy_path = ["src", "tests"]
-namespace_packages = false
-show_error_codes = true
-strict = true
-
-[[tool.mypy.overrides]]
-module = "afsm.*"
-
-[[tool.mypy.overrides]]
-module = "test_afsm.*"
+# Use black for automated code formatting, see https://black.readthedocs.io/.
+# For details about the configuration https://black.readthedocs.io/en/stable/usage_and_configuration/the_basics.html.
+[tool.black]
+target-version = ["py38"]
+line-length = 120
 
 # Use Pylint for static code analysis and coding style validation, see https://pylint.pycqa.org.
 # For configuration details, see https://pylint.pycqa.org/en/latest/user_guide/checkers/features.html.
@@ -94,22 +89,44 @@ evaluation = "10.0 * max(0, 1.0 - (5.0 * error + 2.0 * warning + refactor + conv
 [tool.pylint.logging]
 enable = ["useless-suppression"]
 
+# Use mypy for static code type-checking on type-annotated code, see https://mypy.readthedocs.io.
+# For configuration details, see https://mypy.readthedocs.io/en/latest/config_file.html.
+[tool.mypy]
+python_version = "3.8"
+mypy_path = ["src", "tests"]
+namespace_packages = false
+show_error_codes = true
+strict = true
+
+[[tool.mypy.overrides]]
+module = "afsm.*"
+
+[[tool.mypy.overrides]]
+module = "test_afsm.*"
+
 [tool.bandit]
 exclude_dirs = ["tests"]
 
-# Use black for automated code formatting, see https://black.readthedocs.io/.
-# For details about the configuration https://black.readthedocs.io/en/stable/usage_and_configuration/the_basics.html.
-[tool.black]
-target-version = ["py38"]
-line-length = 120
+# Use pytest for scalable and readable testing, see https://docs.pytest.org/.
+# For details about the configuration see https://docs.pytest.org/en/latest/reference/customize.html.
+[tool.pytest.ini_options]
+testpaths = [
+    "tests"
+]
+console_output_style = "count"
 
-# Use isort for automated, alphabetical import sorting by type, see https://pycqa.github.io/isort/.
-# For details about the configuration https://pycqa.github.io/isort/docs/configuration/options.html.
-[tool.isort]
-py_version = 38
-line_length = 120
-known_first_party = ["afsm"]
-combine_as_imports = true
-skip_gitignore = true
-# Ensure compatibility with black, see https://pycqa.github.io/isort/docs/configuration/black_compatibility.html
-profile = "black"
+[tool.tox]
+legacy_tox_ini = """
+    [tox]
+    env_list =
+        py311
+        py310
+        py39
+        py38
+
+    [testenv]
+    deps =
+        pytest
+    commands =
+        pytest --import-mode importlib tests
+"""

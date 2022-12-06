@@ -20,6 +20,9 @@ __pycache__/
 # Unit test reports and coverage reports
 .pytest_cache/
 
+# tox testing environments
+.tox/
+
 # Sphinx documentation
 docs/_build/
 

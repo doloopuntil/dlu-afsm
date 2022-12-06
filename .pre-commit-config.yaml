@@ -143,19 +143,19 @@ repos:
         stages:
           - push
 
-      - id: pytest
-        name: "\U0001f680\ufe0f Test (pytest)"
-        language: script
-        entry: .venv/bin/pytest
-        pass_filenames: false
-        stages:
-          - push
-
       - id: poetry-lock
         name: "\U0001f512\ufe0f Update - Poetry lock file"
         language: system
         entry: poetry lock
         files: ^pyproject.toml$
+        pass_filenames: false
+        stages:
+          - push
+
+      - id: tox
+        name: "\U0001f680\ufe0f Validate – Package build and test (tox and pytest)"
+        language: script
+        entry: .venv/bin/tox
         pass_filenames: false
         stages:
           - push
