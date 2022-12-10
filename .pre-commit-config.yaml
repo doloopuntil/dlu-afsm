@@ -155,7 +155,7 @@ repos:
       - id: tox
         name: "\U0001f680\ufe0f Validate – Package build and test (tox and pytest)"
         language: script
-        entry: .venv/bin/tox
+        entry: .venv/bin/tox --parallel
         pass_filenames: false
         stages:
           - push
