@@ -55,7 +55,7 @@ class TestFiniteStateMachine:
         return cast(Optional[State], request.param)
 
     @fixture
-    def mock_function(self) -> Mock:
+    def identity_function(self) -> Mock:
         return Mock(side_effect=lambda value: value)
 
     def test_instance_creation_with_initial_state_succeeds(
@@ -85,47 +85,47 @@ class TestFiniteStateMachine:
         assert afsm._state is None  # type: ignore[attr-defined]
 
     def test_transition_to_successive_state_succeeds(
-        self, class_decorator: Callable[..., Any], initial_state: Optional[State], mock_function: Mock
+        self, class_decorator: Callable[..., Any], initial_state: Optional[State], identity_function: Mock
     ) -> None:
         # Given
         @class_decorator
         class AFSM(StateMixin, initial_state=initial_state):
             @transition(from_=initial_state or (), to_=_State.SUCCESSIVE)
             def to_successive(self, value: str) -> str:
-                return cast(str, mock_function(value))
+                return cast(str, identity_function(value))
 
         afsm = AFSM()
 
         # When
-        result = afsm.to_successive("value")
+        result = afsm.to_successive("blue")
 
         # Then  # pylint: disable=no-member,protected-access
         assert afsm._state is _State.SUCCESSIVE  # type: ignore[attr-defined]
-        mock_function.assert_called_once_with("value")
-        assert result == "value"
+        identity_function.assert_called_once_with("blue")
+        assert result == "blue"
 
     def test_transition_to_same_state_succeeds(
-        self, class_decorator: Callable[..., Any], initial_state: Optional[State], mock_function: Mock
+        self, class_decorator: Callable[..., Any], initial_state: Optional[State], identity_function: Mock
     ) -> None:
         # Given
         @class_decorator
         class AFSM(StateMixin, initial_state=initial_state):
             @transition(from_=initial_state or ())
             def to_same_state(self, value: str) -> str:
-                return cast(str, mock_function(value))
+                return cast(str, identity_function(value))
 
         afsm = AFSM()
 
         # When
-        result = afsm.to_same_state("value")
+        result = afsm.to_same_state("blue")
 
         # Then  # pylint: disable=no-member,protected-access
         assert afsm._state is initial_state  # type: ignore[attr-defined]
-        mock_function.assert_called_once_with("value")
-        assert result == "value"
+        identity_function.assert_called_once_with("blue")
+        assert result == "blue"
 
     def test_transition_to_successive_and_final_state_succeeds(
-        self, class_decorator: Callable[..., Any], initial_state: Optional[State], mock_function: Mock
+        self, class_decorator: Callable[..., Any], initial_state: Optional[State], identity_function: Mock
     ) -> None:
         # Given
         @class_decorator
@@ -136,83 +136,96 @@ class TestFiniteStateMachine:
 
             @transition(from_=_State.SUCCESSIVE, to_=_State.FINAL)
             def to_final_state(self, value: str) -> str:
-                return cast(str, mock_function(value))
+                return cast(str, identity_function(value))
 
         afsm = AFSM()
         afsm.to_successive_state()
 
         # When
-        result = afsm.to_final_state("value")
+        result = afsm.to_final_state("blue")
 
         # Then  # pylint: disable=no-member,protected-access
         assert afsm._state is _State.FINAL  # type: ignore[attr-defined]
-        mock_function.assert_called_once_with("value")
-        assert result == "value"
+        identity_function.assert_called_once_with("blue")
+        assert result == "blue"
 
     def test_transition_from_invalid_state_fails(
-        self, class_decorator: Callable[..., Any], mock_function: Mock
+        self, class_decorator: Callable[..., Any], identity_function: Mock
     ) -> None:
         # Given
         @class_decorator
         class AFSM(StateMixin, initial_state=_State.INITIAL):
             @transition(from_=_State.INITIAL, to_=_State.SUCCESSIVE)
             def to_successive_state(self, value: str) -> str:
-                return cast(str, mock_function(value))
+                return cast(str, identity_function(value))
 
             @transition(from_=_State.INITIAL, to_=_State.FINAL)
             def to_final_state(self, value: str) -> str:
-                return cast(str, mock_function(value))
+                return cast(str, identity_function(value))
 
         afsm = AFSM()
-        result = afsm.to_successive_state("one-value")
+        result = afsm.to_successive_state("blue")
 
         # Then
         with raises(StateError):
             # When
-            result = afsm.to_final_state("another-value")
+            result = afsm.to_final_state("orange")
 
-        mock_function.assert_called_once_with("one-value")
-        assert result == "one-value"
+        identity_function.assert_called_once_with("blue")
+        assert result == "blue"
 
     def test_transition_to_idempotent_state_returns_cached_result(
-        self, class_decorator: Callable[..., Any], mock_function: Mock
+        self, class_decorator: Callable[..., Any], identity_function: Mock
     ) -> None:
         # Given
         @class_decorator
         class AFSM(StateMixin, initial_state=_State.INITIAL):
             @transition(from_=_State.INITIAL, to_=_State.SUCCESSIVE, is_idempotent=True)
             def to_successive_state(self, value: str) -> str:
-                return cast(str, mock_function(value))
+                return cast(str, identity_function(value))
 
         afsm = AFSM()
 
         # When
-        first_result = afsm.to_successive_state("one-value")
-        second_result = afsm.to_successive_state("another-value")
+        first_result = afsm.to_successive_state("blue")
+        second_result = afsm.to_successive_state("orange")
 
         # Then
-        mock_function.assert_called_once_with("one-value")
-        assert first_result == "one-value"
-        assert second_result == "one-value"
+        identity_function.assert_called_once_with("blue")
+        assert first_result == "blue"
+        assert second_result == "blue"
 
-    def test_exception_on_transition_calls_handler(
-        self, class_decorator: Callable[..., Any], mock_function: Mock
-    ) -> None:
+    def test_transition_raises_on_unhandled_exception(self, class_decorator: Callable[..., Any]) -> None:
         # Given
         @class_decorator
         class AFSM(StateMixin, initial_state=_State.INITIAL):
-            def handle_exception(self, exception: Exception, value: str) -> str:
-                return cast(str, mock_function(f"{exception}-{value}"))
-
-            @transition(from_=_State.INITIAL, to_=_State.SUCCESSIVE, on_error=handle_exception)
+            @transition(from_=_State.INITIAL, to_=_State.SUCCESSIVE)
             def to_successive_state(self, value: str) -> str:
                 raise ValueError(value)
 
         afsm = AFSM()
 
+        # Then
+        with raises(ValueError, match="red"):
+            # When
+            afsm.to_successive_state("red")
+
+    def test_transition_calls_handler_on_handled_exception(self, class_decorator: Callable[..., Any]) -> None:
+        # Given
+        exception = ValueError("red")
+        handle_exception = Mock(return_value="orange")
+
+        @class_decorator
+        class AFSM(StateMixin, initial_state=_State.INITIAL):
+            @transition(from_=_State.INITIAL, to_=_State.SUCCESSIVE, on_error=handle_exception)
+            def to_successive_state(self, *args: str, **kwargs: str) -> str:
+                raise exception
+
+        afsm = AFSM()
+
         # When
-        result = afsm.to_successive_state("one-value")
+        result = afsm.to_successive_state("blue", "green", third_colour="yellow")
 
         # Then
-        mock_function.assert_called_once_with("one-value-one-value")
-        assert result == "one-value-one-value"
+        handle_exception.assert_called_once_with(afsm, exception, "blue", "green", third_colour="yellow")
+        assert result == "orange"
