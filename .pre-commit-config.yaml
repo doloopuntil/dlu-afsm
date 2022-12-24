@@ -157,5 +157,8 @@ repos:
         language: script
         entry: .venv/bin/tox --parallel
         pass_filenames: false
+        types_or:
+          - python
+          - pyi
         stages:
           - push
