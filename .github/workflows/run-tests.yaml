@@ -70,6 +70,4 @@ jobs:
         run: poetry install --no-ansi --no-root --only ci
 
       - name: Run code validation
-        run: |
-          PYENV=$(echo py${{ matrix.python-version }} | tr -d .)
-          poetry run tox -e clean,$PYENV,report
+        run: poetry run tox -e $(echo py${{ matrix.python-version }} | tr -d .)

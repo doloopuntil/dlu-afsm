@@ -2,14 +2,11 @@
 .python-version
 
 # poetry virtual environemnt
-.pyenv/
+.venv/
 
 # Byte-compiled and optimised sources
 __pycache__/
 *.py[co]
-
-# macOS metadata
-.DS_Store
 
 # Idea project settings
 .idea/
@@ -17,8 +14,11 @@ __pycache__/
 # mypy type-checking cache
 .mypy_cache/
 
-# Unit test reports and coverage reports
+# Unit test reports
 .pytest_cache/
+
+# Coverage reports
+.coverage
 
 # tox testing environments
 .tox/
@@ -28,3 +28,6 @@ docs/_build/
 
 # Distribution and packaging artefacts
 dist/
+
+# macOS metadata
+.DS_Store

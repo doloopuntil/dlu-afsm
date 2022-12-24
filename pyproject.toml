@@ -1,6 +1,6 @@
 [build-system]
-# Use poetry for Python dependency management, see https://python-poetry.org/docs/
-# For configuration details, see https://python-poetry.org/docs/configuration/.
+## Use poetry for Python dependency management, see https://python-poetry.org/docs/
+## For configuration details, see https://python-poetry.org/docs/configuration/.
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
@@ -26,29 +26,36 @@ classifiers = [
 python = "^3.8"
 
 [tool.poetry.group.dev.dependencies]
+pre-commit = "^2.20"
+pre-commit-hooks = "*"
+
+[tool.poetry.group.qa.dependencies]
 rstcheck = "^6.1"
-isort = "^5.0"
 black = "^22.1"
 blacken-docs = "^1.12"
+isort = "^5.0"
 pylint = "^2.15"
 mypy = "^0"
 bandit = "^1.7"
-pre-commit = "^2.20"
-pre-commit-hooks = "*"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^7.0"
 pytest-mock = "*"
-pytest-cov = "*"
+coverage = "^7.0"
 attrs = ">=21"  # Modern attrs APIs, see https://www.attrs.org/en/stable/names.html
 
 [tool.poetry.group.ci.dependencies]
 tox = "^4.0.10"
 
-[tool.isort]
-# Use isort for automated, alphabetical import sorting by type, see https://pycqa.github.io/isort/.
-# For details about the configuration https://pycqa.github.io/isort/docs/configuration/options.html.
+[tool.black]
+## Use black for automated code formatting, see https://black.readthedocs.io/.
+## For details about the configuration https://black.readthedocs.io/en/stable/usage_and_configuration/the_basics.html.
+target-version = ["py38"]
+line-length = 120
 
+[tool.isort]
+## Use isort for automated, alphabetical import sorting by type, see https://pycqa.github.io/isort/.
+## For details about the configuration https://pycqa.github.io/isort/docs/configuration/options.html.
 py_version = 38
 line_length = 120
 known_first_party = ["afsm"]
@@ -57,18 +64,10 @@ skip_gitignore = true
 # Ensure compatibility with black, see https://pycqa.github.io/isort/docs/configuration/black_compatibility.html
 profile = "black"
 
-[tool.black]
-# Use black for automated code formatting, see https://black.readthedocs.io/.
-# For details about the configuration https://black.readthedocs.io/en/stable/usage_and_configuration/the_basics.html.
-
-target-version = ["py38"]
-line-length = 120
-
 [tool.pylint.main]
-# Use Pylint for static code analysis and coding style validation, see https://pylint.pycqa.org.
-# For configuration details, see https://pylint.pycqa.org/en/latest/user_guide/checkers/features.html.
-# This configuration follows recommendations in https://pythonspeed.com/articles/pylint.
-
+## Use Pylint for static code analysis and coding style validation, see https://pylint.pycqa.org.
+## For configuration details, see https://pylint.pycqa.org/en/latest/user_guide/checkers/features.html.
+## This configuration follows recommendations in https://pythonspeed.com/articles/pylint.
 py-version = "3.8"
 
 [tool.pylint.format]
@@ -89,9 +88,8 @@ evaluation = "10.0 * max(0, 1.0 - (5.0 * error + 2.0 * warning + refactor + conv
 enable = ["useless-suppression"]
 
 [tool.mypy]
-# Use mypy for static code type-checking on type-annotated code, see https://mypy.readthedocs.io.
-# For configuration details, see https://mypy.readthedocs.io/en/latest/config_file.html.
-
+## Use mypy for static code type-checking on type-annotated code, see https://mypy.readthedocs.io.
+## For configuration details, see https://mypy.readthedocs.io/en/latest/config_file.html.
 python_version = "3.8"
 mypy_path = ["src", "tests"]
 namespace_packages = false
@@ -108,22 +106,23 @@ module = "test_afsm.*"
 exclude_dirs = ["tests"]
 
 [tool.pytest.ini_options]
-# Use pytest for scalable and readable testing, see https://docs.pytest.org/.
-# For details about the configuration see https://docs.pytest.org/en/latest/reference/customize.html.
-
+## Use pytest for scalable and readable testing, see https://docs.pytest.org/.
+## For details about the configuration see https://docs.pytest.org/en/latest/reference/customize.html.
 testpaths = ["tests"]
 console_output_style = "count"
 
-[tool.coverage.paths]
-# Map different coverage report paths, generated for each tox test environment, to the same paths in the source tree.
-# Without this map, the coverage report shows metrics for each environment, instead of aggregates over all environments.
-source_map = ["src/afsm/", "**/afsm/"]
-
 [tool.coverage.run]
+## Use Coverage.py to measure code coverage, see https://coverage.readthedocs.io/.
+## For details about the configuration see https://coverage.readthedocs.io/en/latest/config.html.
 source = ["afsm"]
 branch = true
 parallel = true
-data_file = ".pytest_cache/.coverage"
+data_file = ".coverage/data"
+
+[tool.coverage.paths]
+# Map different coverage report paths, generated for each tox test environment, to the same paths in the source tree.
+# Without this, the combined report shows coverage for each environment, instead of aggregates over all environments.
+source_map = ["src/afsm/", "**/afsm/"]
 
 [tool.coverage.report]
 show_missing = true
@@ -133,6 +132,8 @@ fail_under = 90
 exclude_lines = ["pragma: not covered", "@overload"]
 
 [tool.tox]
+## Use tox to automate testing with different versions and implementations of Python. See https://tox.wiki/.
+## For details about the configuration see https://tox.wiki/en/latest/config.html.
 legacy_tox_ini = """
     [tox]
     skip_missing_interpreters = true
@@ -153,12 +154,14 @@ legacy_tox_ini = """
     [testenv:py{38,39,310,311,py3}]
     description = Run tests for {py_impl}-{py_dot_ver}
     depends = clean
-    commands = pytest --cov --cov-append --cov-report= --import-mode=importlib tests
+    commands = coverage run --parallel-mode --module pytest --import-mode=importlib tests
 
     [testenv:report]
     description = Generate coverage report
     depends = py{38,39,310,311,py3}
     skip_install = true
     parallel_show_output = true
-    commands = coverage report --show-missing --fail-under=95
+    commands =
+        coverage combine --quiet
+        coverage report --show-missing --fail-under=95
 """
