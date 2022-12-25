@@ -20,7 +20,7 @@ except TypeError:  # Python < 3.10 does not support slotted dataclasses
 
 class _State(State):
     INITIAL = auto()
-    SUCCESSIVE = auto()
+    NEXT = auto()
     FINAL = auto()
 
 
@@ -69,8 +69,8 @@ class TestFiniteStateMachine:
         # When
         afsm = AFSM()
 
-        # Then  # pylint: disable=no-member,protected-access
-        assert afsm._state is initial_state  # type: ignore[attr-defined]
+        # Then
+        assert afsm._state is initial_state  # type: ignore[attr-defined] # pylint: disable=no-member,protected-access
 
     def test_instance_creation_without_initial_state_succeeds(self, class_decorator: Callable[..., Any]) -> None:
         # Given
@@ -81,26 +81,26 @@ class TestFiniteStateMachine:
         # When
         afsm = AFSM()
 
-        # Then  # pylint: disable=no-member,protected-access
-        assert afsm._state is None  # type: ignore[attr-defined]
+        # Then
+        assert afsm._state is None  # type: ignore[attr-defined] # pylint: disable=no-member,protected-access
 
-    def test_transition_to_successive_state_succeeds(
+    def test_transition_to_next_state_succeeds(
         self, class_decorator: Callable[..., Any], initial_state: Optional[State], identity_function: Mock
     ) -> None:
         # Given
         @class_decorator
         class AFSM(StateMixin, initial_state=initial_state):
-            @transition(from_=initial_state or (), to_=_State.SUCCESSIVE)
-            def to_successive(self, value: str) -> str:
+            @transition(from_=initial_state or (), to_=_State.NEXT)
+            def to_next_state(self, value: str) -> str:
                 return cast(str, identity_function(value))
 
         afsm = AFSM()
 
         # When
-        result = afsm.to_successive("blue")
+        result = afsm.to_next_state("blue")
 
-        # Then  # pylint: disable=no-member,protected-access
-        assert afsm._state is _State.SUCCESSIVE  # type: ignore[attr-defined]
+        # Then
+        assert afsm._state is _State.NEXT  # type: ignore[attr-defined] # pylint: disable=no-member,protected-access
         identity_function.assert_called_once_with("blue")
         assert result == "blue"
 
@@ -119,33 +119,33 @@ class TestFiniteStateMachine:
         # When
         result = afsm.to_same_state("blue")
 
-        # Then  # pylint: disable=no-member,protected-access
-        assert afsm._state is initial_state  # type: ignore[attr-defined]
+        # Then
+        assert afsm._state is initial_state  # type: ignore[attr-defined] # pylint: disable=no-member,protected-access
         identity_function.assert_called_once_with("blue")
         assert result == "blue"
 
-    def test_transition_to_successive_and_final_state_succeeds(
+    def test_transition_to_next_state_and_final_state_succeeds(
         self, class_decorator: Callable[..., Any], initial_state: Optional[State], identity_function: Mock
     ) -> None:
         # Given
         @class_decorator
         class AFSM(StateMixin, initial_state=initial_state):
-            @transition(from_=initial_state, to_=_State.SUCCESSIVE)
-            def to_successive_state(self) -> None:
+            @transition(from_=initial_state, to_=_State.NEXT)
+            def to_next_state(self) -> None:
                 pass
 
-            @transition(from_=_State.SUCCESSIVE, to_=_State.FINAL)
+            @transition(from_=_State.NEXT, to_=_State.FINAL)
             def to_final_state(self, value: str) -> str:
                 return cast(str, identity_function(value))
 
         afsm = AFSM()
-        afsm.to_successive_state()
+        afsm.to_next_state()
 
         # When
         result = afsm.to_final_state("blue")
 
-        # Then  # pylint: disable=no-member,protected-access
-        assert afsm._state is _State.FINAL  # type: ignore[attr-defined]
+        # Then
+        assert afsm._state is _State.FINAL  # type: ignore[attr-defined] # pylint: disable=no-member,protected-access
         identity_function.assert_called_once_with("blue")
         assert result == "blue"
 
@@ -155,8 +155,8 @@ class TestFiniteStateMachine:
         # Given
         @class_decorator
         class AFSM(StateMixin, initial_state=_State.INITIAL):
-            @transition(from_=_State.INITIAL, to_=_State.SUCCESSIVE)
-            def to_successive_state(self, value: str) -> str:
+            @transition(from_=_State.INITIAL, to_=_State.NEXT)
+            def to_next_state(self, value: str) -> str:
                 return cast(str, identity_function(value))
 
             @transition(from_=_State.INITIAL, to_=_State.FINAL)
@@ -164,7 +164,7 @@ class TestFiniteStateMachine:
                 return cast(str, identity_function(value))
 
         afsm = AFSM()
-        result = afsm.to_successive_state("blue")
+        result = afsm.to_next_state("blue")
 
         # Then
         with raises(StateError):
@@ -180,15 +180,15 @@ class TestFiniteStateMachine:
         # Given
         @class_decorator
         class AFSM(StateMixin, initial_state=_State.INITIAL):
-            @transition(from_=_State.INITIAL, to_=_State.SUCCESSIVE, is_idempotent=True)
-            def to_successive_state(self, value: str) -> str:
+            @transition(from_=_State.INITIAL, to_=_State.NEXT, is_idempotent=True)
+            def to_next_state(self, value: str) -> str:
                 return cast(str, identity_function(value))
 
         afsm = AFSM()
 
         # When
-        first_result = afsm.to_successive_state("blue")
-        second_result = afsm.to_successive_state("orange")
+        first_result = afsm.to_next_state("blue")
+        second_result = afsm.to_next_state("orange")
 
         # Then
         identity_function.assert_called_once_with("blue")
@@ -199,8 +199,8 @@ class TestFiniteStateMachine:
         # Given
         @class_decorator
         class AFSM(StateMixin, initial_state=_State.INITIAL):
-            @transition(from_=_State.INITIAL, to_=_State.SUCCESSIVE)
-            def to_successive_state(self, value: str) -> str:
+            @transition(from_=_State.INITIAL, to_=_State.NEXT)
+            def to_next_state(self, value: str) -> str:
                 raise ValueError(value)
 
         afsm = AFSM()
@@ -208,7 +208,7 @@ class TestFiniteStateMachine:
         # Then
         with raises(ValueError, match="red"):
             # When
-            afsm.to_successive_state("red")
+            afsm.to_next_state("red")
 
     def test_transition_calls_handler_on_handled_exception(self, class_decorator: Callable[..., Any]) -> None:
         # Given
@@ -217,14 +217,14 @@ class TestFiniteStateMachine:
 
         @class_decorator
         class AFSM(StateMixin, initial_state=_State.INITIAL):
-            @transition(from_=_State.INITIAL, to_=_State.SUCCESSIVE, on_error=handle_exception)
-            def to_successive_state(self, *args: str, **kwargs: str) -> str:
+            @transition(from_=_State.INITIAL, to_=_State.NEXT, on_error=handle_exception)
+            def to_next_state(self, *args: str, **kwargs: str) -> str:
                 raise exception
 
         afsm = AFSM()
 
         # When
-        result = afsm.to_successive_state("blue", "green", third_colour="yellow")
+        result = afsm.to_next_state("blue", "green", third_colour="yellow")
 
         # Then
         handle_exception.assert_called_once_with(afsm, exception, "blue", "green", third_colour="yellow")
