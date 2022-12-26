@@ -1,16 +1,13 @@
 # Use pre-commit hooks to identify issues before code submissions. See https://pre-commit.com for more details and
 # https://pre-commit.com/hooks.html for hook details.
 
-# Use local pre-commit hooks in poetry's virtual environment by setting `repo: local`, `language: script`, and
-# `entry: `.venv/bin/<script>`. Script hooks execute faster than equivalent ones with `language: system` and
-# `entry: poetry run <script>` as they side-step poetry's startup overhead.
-
-minimum_pre_commit_version: "2.20"
-
 default_stages:
   - commit
 
 repos:
+  # Use pre-commit hooks installed in the project's virtual environment via ``repo: local`` in combination with
+  # ``language: script`` and ``entry: .venv/bin/<script>``. Scripts execute faster than equivalent ones specified using
+  # ``language: system`` and ``entry: <package-manager> run <script>`` as they side-step the package manager's overhead.
   - repo: local
 
     hooks:
@@ -40,7 +37,7 @@ repos:
         language: script
         entry: .venv/bin/check-case-conflict
 
-      - id: name-tests-test
+      - id: check-test-names
         name: "\U0001f524\ufe0f Check - Filename for tests"
         language: script
         entry: .venv/bin/name-tests-test
@@ -48,41 +45,33 @@ repos:
           - "--pytest-test-first"
         files: (^|/)tests/.+\.py$
 
-
-      - id: check-added-large-files
+      - id: check-large-files
         name: "\U0001f40b\ufe0f Check - No large files"
         language: script
         entry: .venv/bin/check-added-large-files
 
-      - id: poetry-check
-        name: "\U00002699\ufe0f  Check - Poetry configuration file"
-        language: system
-        entry: poetry check
-        files: ^pyproject.toml$
-        pass_filenames: false
-
-      - id: trailing-whitespace-fixer
+      - id: fix-trailing-whitespaces
         name: "\U0001f51a\ufe0f Fix - Trailing whitespaces"
         language: script
         entry: .venv/bin/trailing-whitespace-fixer
         types:
           - text
 
-      - id: mixed-line-ending
+      - id: fix-mixed-line-ending
         name: "\U000021a9\ufe0f  Fix - Mixed line endings"
         language: script
         entry: .venv/bin/mixed-line-ending
         args:
           - "--fix=lf"
 
-      - id: end-of-file-fixer
+      - id: fix-end-of-file
         name: "\U00002702\ufe0f  Fix - Single-newline file ending"
         language: script
         entry: .venv/bin/end-of-file-fixer
         types:
           - text
 
-      - id: isort
+      - id: fix-import-order
         name: "\U0001f9e1\ufe0f Fix - Python import order (isort)"
         language: script
         entry: .venv/bin/isort
@@ -91,8 +80,8 @@ repos:
           - python
           - pyi
 
-      - id: black
-        name: "\U0001f5a4\ufe0f Fix - Python code formatting (black)"
+      - id: fix-code-style
+        name: "\U0001f5a4\ufe0f Fix - Python code style (black)"
         language: script
         entry: .venv/bin/black
         require_serial: true
@@ -100,8 +89,8 @@ repos:
           - python
           - pyi
 
-      - id: blacken-docs
-        name: "\U00002712\ufe0f  Fix - Python docs formatting (blacken)"
+      - id: fix-docs-code-style
+        name: "\U00002712\ufe0f  Fix - Python docs code style (blacken)"
         language: script
         entry: .venv/bin/blacken-docs
         require_serial: true
@@ -110,7 +99,17 @@ repos:
           - pyi
           - rst
 
-      - id: pylint
+      - id: check-dependency-lock
+        name: "\U0001f512\ufe0f Check - Dependency lock file"
+        language: system
+        entry: pdm lock --check
+        files: ^pyproject.toml$
+        pass_filenames: false
+        fail_fast: true
+        stages:
+          - push
+
+      - id: analyse-code-smells
         name: "\U0001f443\ufe0f Analyse - Python code smells (pylint)"
         language: script
         entry: .venv/bin/pylint
@@ -121,7 +120,7 @@ repos:
         stages:
           - push
 
-      - id: mypy
+      - id: analyse-code-typing
         name: "\U0001f4d8\ufe0f Analyse - Python code typing (mypy)"
         language: script
         entry: .venv/bin/mypy
@@ -132,7 +131,7 @@ repos:
         stages:
           - push
 
-      - id: bandit
+      - id: analyse-code-vulnerabilities
         name: "\U000026cf\ufe0f  Analyse - Python code vulnerabilities (bandit)"
         language: script
         entry: .venv/bin/bandit -c pyproject.toml
@@ -143,16 +142,7 @@ repos:
         stages:
           - push
 
-      - id: poetry-lock
-        name: "\U0001f512\ufe0f Update - Poetry lock file"
-        language: system
-        entry: poetry lock
-        files: ^pyproject.toml$
-        pass_filenames: false
-        stages:
-          - push
-
-      - id: tox
+      - id: validate-build-test
         name: "\U0001f680\ufe0f Validate – Package build and test (tox and pytest)"
         language: script
         entry: .venv/bin/tox --parallel

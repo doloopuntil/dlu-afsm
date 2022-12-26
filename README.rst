@@ -28,5 +28,5 @@ Development
 -----------
 
 * Run ``git clone``
-* Run ``poetry install``
-* Run ``poetry run pre-commit install -t pre-commit -t pre-push`` to install pre-commit hooks.
+* Run ``pdm install``
+* Run ``pdm run pre-commit install -t pre-commit -t pre-push`` to install pre-commit hooks.

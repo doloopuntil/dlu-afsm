@@ -20,4 +20,5 @@
 from ._fsm import StateMixin, Transition as transition
 from ._state import State, StateError
 
+__version__ = "0.1.0"
 __all__ = ["StateMixin", "State", "StateError", "transition"]

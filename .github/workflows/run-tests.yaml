@@ -29,10 +29,6 @@ jobs:
           - "3.9"
           - "3.10"
           - "3.11"
-        include:
-          - poetry-directory: $HOME/.local/bin
-          - os: Windows
-            poetry-directory: $APPDATA\Python\Scripts
 
     defaults:
       run:
@@ -48,16 +44,16 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Bootstrap poetry
-        run: |
-          curl -sSL https://install.python-poetry.org | python - -y
-          echo "${{ matrix.poetry-directory }}" >> $GITHUB_PATH
+      - name: Bootstrap PDM
+        uses: pdm-project/setup-pdm@v3
+        with:
+          python-version: ${{ matrix.python-version }}
 
       - name: Set up cache
         uses: actions/cache@v3
         id: cache
         with:
-          key: ${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+          key: ${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/pdm.lock') }}
           path: |
             .venv
             .tox
@@ -67,7 +63,13 @@ jobs:
         run: timeout 5s .venv/bin/pip --version || rm -rf .venv
 
       - name: Install CI dependencies
-        run: poetry install --no-ansi --no-root --only ci
+        run: pdm install --no-self --group ci
 
-      - name: Run code validation
-        run: poetry run tox -e $(echo py${{ matrix.python-version }} | tr -d .)
+      - name: Run tests
+        run: pdm run tox -e $(echo py${{ matrix.python-version }} | tr -d .)
+
+      - name: Store coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage
+          path: .coverage/

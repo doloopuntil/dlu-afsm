@@ -1,17 +1,18 @@
-[build-system]
-## Use poetry for Python dependency management, see https://python-poetry.org/docs/
-## For configuration details, see https://python-poetry.org/docs/configuration/.
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
-
-[tool.poetry]
+[project]
 name = "dlu-afsm"
-version = "0.1"
 description = "Simple decorator-based finite state machine library, compatible with attrs and dataclasses."
-authors = ["Daniele Masato <masato.daniele@gmail.com>"]
-license = "Apache-2.0"
+authors = [
+    {name = "Daniele Masato"},
+    {name = "Daniele Masato", email = "masato.daniele@gmail.com"}
+]
+license = {file = "LICENSE"}
 readme = "README.rst"
-packages = [{ include = "afsm", from = "src" }]
+keywords = [
+    "finite state machine",
+    "decorator",
+    "attrs",
+    "dataclass",
+]
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: Apache Software License",
@@ -21,31 +22,54 @@ classifiers = [
     "Natural Language :: English",
     "Topic :: Software Development :: Libraries",
 ]
+requires-python = ">= 3.8"
+dependencies = []
+dynamic = ["version"]
 
-[tool.poetry.dependencies]
-python = "^3.8"
+[build-system]
+## Use PDM-Backend (Python Dependency Master) as the build system, see https://pdm-backend.fming.dev/.
+## For configuration details, see https://pdm-backend.fming.dev/build_config/.
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
 
-[tool.poetry.group.dev.dependencies]
-pre-commit = "^2.20"
-pre-commit-hooks = "*"
+[tool.pdm.version]
+source = "file"
+path = "src/afsm/__init__.py"
 
-[tool.poetry.group.qa.dependencies]
-rstcheck = "^6.1"
-black = "^22.1"
-blacken-docs = "^1.12"
-isort = "^5.0"
-pylint = "^2.15"
-mypy = "^0"
-bandit = "^1.7"
+[tool.pdm.dev-dependencies]
+## Use PDM for dependency management, see https://pdm.fming.dev/.
+## For configuration details, see https://pdm.fming.dev/latest/usage/dependency/.
 
-[tool.poetry.group.test.dependencies]
-pytest = "^7.0"
-pytest-mock = "*"
-coverage = "^7.0"
-attrs = ">=21"  # Modern attrs APIs, see https://www.attrs.org/en/stable/names.html
+# Base development dependencies.
+base = [
+    "pre-commit >= 2.20.0",
+    "pre-commit-hooks"
+]
 
-[tool.poetry.group.ci.dependencies]
-tox = "^4.0.10"
+# Code qaulity dependencies, pre-commit uses these to perform code checks before a commit or a push.
+qa = [
+    "rstcheck >= 6.1",
+    "black >= 22.1",
+    "blacken-docs >= 1.12",
+    "isort >= 5.0",
+    "pylint >= 2.15",
+    "mypy >= 0",
+    "bandit[toml] >= 1.7"
+]
+
+# Test dependencies, tox uses these to test the package under different Python environments.
+test = [
+    "pytest >= 7.0",
+    "pytest-mock",
+    "coverage >= 7.0",
+    "attrs >= 21"  # Modern attrs APIs, see https://www.attrs.org/en/stable/names.html
+]
+
+# Continuous integration dependencies, pre-committ uses these to perform code validation before a push.
+ci = [
+    "tox >= 4.0.10",
+    "tox-pdm"  # tox plugin to delegate dependency management to PDM.
+]
 
 [tool.black]
 ## Use black for automated code formatting, see https://black.readthedocs.io/.
@@ -143,8 +167,7 @@ legacy_tox_ini = """
         report
 
     [testenv]
-    allowlist_externals = poetry
-    commands_pre = poetry install --no-ansi --no-root --only test  # ANSI output causes crashes with pre-commit
+    groups = test  # Install dependencies from PDM's test dependency group.
 
     [testenv:clean]
     description = Clean coverage report
