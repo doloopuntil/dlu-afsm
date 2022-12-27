@@ -10,8 +10,8 @@ from typing import Any, Iterable
 @unique
 class State(Enum):
     """
-    A base :class:`~Enum` defining states for a finite state machine. This class supports automatic value setting for
-    members using :class:`~auto` and enforce enumeration members uniqueness.
+    A base :class:`~Enum` that defines states for a finite state machine. This class supports automatic value setting
+    for members using :class:`~auto` and enforces enumeration members uniqueness.
 
     >>> from enum import auto
     >>>
@@ -41,3 +41,15 @@ class StateError(Exception):
         )
 
         super().__init__(message)
+
+
+@unique
+class StateField(Enum):
+    """
+    An :class:`~Enum` that defines utility field names for a finite state machine. These fields should not be accessed
+    directly, they are used internally to manage the machine state.
+    """
+
+    STATE = "_state"
+    INITIAL_STATE = "_initial_state"
+    RETURN_VALUES = "_return_values"

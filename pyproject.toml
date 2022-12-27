@@ -27,8 +27,8 @@ dependencies = []
 dynamic = ["version"]
 
 [build-system]
-## Use PDM-Backend (Python Dependency Master) as the build system, see https://pdm-backend.fming.dev/.
-## For configuration details, see https://pdm-backend.fming.dev/build_config/.
+## Use PDM-Backend (Python Dependency Master) as the build system, see https://pdm-backend.fming.dev/
+## For configuration details, see https://pdm-backend.fming.dev/build_config/
 requires = ["pdm-backend"]
 build-backend = "pdm.backend"
 
@@ -37,16 +37,16 @@ source = "file"
 path = "src/afsm/__init__.py"
 
 [tool.pdm.dev-dependencies]
-## Use PDM for dependency management, see https://pdm.fming.dev/.
-## For configuration details, see https://pdm.fming.dev/latest/usage/dependency/.
+## Use PDM for dependency management, see https://pdm.fming.dev/
+## For configuration details, see https://pdm.fming.dev/latest/usage/dependency/
 
-# Base development dependencies.
+# Base development dependencies
 base = [
     "pre-commit >= 2.20.0",
-    "pre-commit-hooks"
+    "pre-commit-hooks >= 4.4",
 ]
 
-# Code qaulity dependencies, pre-commit uses these to perform code checks before a commit or a push.
+# Code qaulity dependencies, pre-commit uses these to perform code checks before a commit or a push
 qa = [
     "rstcheck >= 6.1",
     "black >= 22.1",
@@ -54,32 +54,32 @@ qa = [
     "isort >= 5.0",
     "pylint >= 2.15",
     "mypy >= 0",
-    "bandit[toml] >= 1.7"
+    "bandit[toml] >= 1.7",
 ]
 
-# Test dependencies, tox uses these to test the package under different Python environments.
+# Test dependencies, tox uses these to test the package under different Python environments
 test = [
     "pytest >= 7.0",
-    "pytest-mock",
+    "pytest-mock >= 3.10",
     "coverage >= 7.0",
-    "attrs >= 21"  # Modern attrs APIs, see https://www.attrs.org/en/stable/names.html
+    "attrs >= 21",  # Modern attrs APIs, see https://www.attrs.org/en/stable/names.html
 ]
 
-# Continuous integration dependencies, pre-committ uses these to perform code validation before a push.
+# Continuous integration dependencies, pre-committ uses these to perform code validation before a push
 ci = [
     "tox >= 4.0.10",
-    "tox-pdm"  # tox plugin to delegate dependency management to PDM.
+    "tox-pdm",  # tox plugin to delegate dependency management to PDM
 ]
 
 [tool.black]
-## Use black for automated code formatting, see https://black.readthedocs.io/.
-## For details about the configuration https://black.readthedocs.io/en/stable/usage_and_configuration/the_basics.html.
+## Use black for automated code formatting, see https://black.readthedocs.io/
+## For configuration details, see https://black.readthedocs.io/en/stable/usage_and_configuration/the_basics.html
 target-version = ["py38"]
 line-length = 120
 
 [tool.isort]
-## Use isort for automated, alphabetical import sorting by type, see https://pycqa.github.io/isort/.
-## For details about the configuration https://pycqa.github.io/isort/docs/configuration/options.html.
+## Use isort for automated, alphabetical import sorting by type, see https://pycqa.github.io/isort/
+## For configuration details, see https://pycqa.github.io/isort/docs/configuration/options.html
 py_version = 38
 line_length = 120
 known_first_party = ["afsm"]
@@ -89,9 +89,9 @@ skip_gitignore = true
 profile = "black"
 
 [tool.pylint.main]
-## Use Pylint for static code analysis and coding style validation, see https://pylint.pycqa.org.
-## For configuration details, see https://pylint.pycqa.org/en/latest/user_guide/checkers/features.html.
-## This configuration follows recommendations in https://pythonspeed.com/articles/pylint.
+## Use Pylint for static code analysis and coding style validation, see https://pylint.pycqa.org
+## For configuration details, see https://pylint.pycqa.org/en/latest/user_guide/checkers/features.html
+## This configuration follows recommendations in https://pythonspeed.com/articles/pylint
 py-version = "3.8"
 
 [tool.pylint.format]
@@ -112,8 +112,8 @@ evaluation = "10.0 * max(0, 1.0 - (5.0 * error + 2.0 * warning + refactor + conv
 enable = ["useless-suppression"]
 
 [tool.mypy]
-## Use mypy for static code type-checking on type-annotated code, see https://mypy.readthedocs.io.
-## For configuration details, see https://mypy.readthedocs.io/en/latest/config_file.html.
+## Use mypy for static code type-checking on type-annotated code, see https://mypy.readthedocs.io
+## For configuration details, see https://mypy.readthedocs.io/en/latest/config_file.html
 python_version = "3.8"
 mypy_path = ["src", "tests"]
 namespace_packages = false
@@ -130,14 +130,15 @@ module = "test_afsm.*"
 exclude_dirs = ["tests"]
 
 [tool.pytest.ini_options]
-## Use pytest for scalable and readable testing, see https://docs.pytest.org/.
-## For details about the configuration see https://docs.pytest.org/en/latest/reference/customize.html.
+## Use pytest for scalable and readable testing, see https://docs.pytest.org/
+## For configuration details, see https://docs.pytest.org/en/latest/reference/customize.html
 testpaths = ["tests"]
 console_output_style = "count"
+python_functions = "*_succeeds *_fails returns_* raises_* calls_*"
 
 [tool.coverage.run]
-## Use Coverage.py to measure code coverage, see https://coverage.readthedocs.io/.
-## For details about the configuration see https://coverage.readthedocs.io/en/latest/config.html.
+## Use Coverage.py to measure code coverage, see https://coverage.readthedocs.io/
+## For configuration details, see https://coverage.readthedocs.io/en/latest/config.html
 source = ["afsm"]
 branch = true
 parallel = true
@@ -156,8 +157,8 @@ fail_under = 90
 exclude_lines = ["pragma: not covered", "@overload"]
 
 [tool.tox]
-## Use tox to automate testing with different versions and implementations of Python. See https://tox.wiki/.
-## For details about the configuration see https://tox.wiki/en/latest/config.html.
+## Use tox to automate testing with different versions and implementations of Python, see https://tox.wiki/
+## For configuration details, see https://tox.wiki/en/latest/config.html
 legacy_tox_ini = """
     [tox]
     skip_missing_interpreters = true
@@ -167,7 +168,7 @@ legacy_tox_ini = """
         report
 
     [testenv]
-    groups = test  # Install dependencies from PDM's test dependency group.
+    groups = test  # Install dependencies from PDM's test dependency group
 
     [testenv:clean]
     description = Clean coverage report

@@ -427,7 +427,7 @@ summary = "Style preserving TOML library"
 
 [[package]]
 name = "tox"
-version = "4.0.17"
+version = "4.0.18"
 requires_python = ">=3.7"
 summary = "tox is a generic virtualenv management and test command line tool"
 dependencies = [
@@ -505,7 +505,7 @@ summary = "Module for decorators, wrappers and monkey patching."
 
 [metadata]
 lock_version = "4.1"
-content_hash = "sha256:d83fca0752e89c22f75e380cf574695affc47109d3a707c3e97dac594a2af061"
+content_hash = "sha256:b78c4f867ae21e0e8c356fa13b6e0aba993f9c5278c481be8aa5e6df660581f4"
 
 [metadata.files]
 "astroid 2.12.13" = [
@@ -928,9 +928,9 @@ content_hash = "sha256:d83fca0752e89c22f75e380cf574695affc47109d3a707c3e97dac594
     {url = "https://files.pythonhosted.org/packages/2b/df/971fa5db3250bb022105d17f340339370f73d502e65e687a94ca1a4c4b1f/tomlkit-0.11.6-py3-none-any.whl", hash = "sha256:07de26b0d8cfc18f871aec595fda24d95b08fef89d147caa861939f37230bf4b"},
     {url = "https://files.pythonhosted.org/packages/ff/04/58b4c11430ed4b7b8f1723a5e4f20929d59361e9b17f0872d69681fd8ffd/tomlkit-0.11.6.tar.gz", hash = "sha256:71b952e5721688937fb02cf9d354dbcf0785066149d2855e44531ebdd2b65d73"},
 ]
-"tox 4.0.17" = [
-    {url = "https://files.pythonhosted.org/packages/9c/bb/490eca19c2679884e9f9214c714fe92cdf878d0e5cc2f3096d9c35c06cee/tox-4.0.17-py3-none-any.whl", hash = "sha256:75d38f21cd7b7a6b90f199a6f84cc56fa5bec827606c106356a0be832630743f"},
-    {url = "https://files.pythonhosted.org/packages/ca/87/d17a1863aadeb6f1a4e965b361ef5c68a377ff34ae9e108c4d22a59e7b10/tox-4.0.17.tar.gz", hash = "sha256:ff03d29669ce728a395bf6e4da6c3904787c0d3c982a94df9ba5d05f6c126bc4"},
+"tox 4.0.18" = [
+    {url = "https://files.pythonhosted.org/packages/46/fb/c7d68c952feccbd3dfd36ecdba54a424eea0e5d6ca0d9cdb9e9581915e79/tox-4.0.18.tar.gz", hash = "sha256:e862abf5b75aa2d84e087a2f9696b97faf01dff8836515216f0453e951745eee"},
+    {url = "https://files.pythonhosted.org/packages/a4/2a/60be3504dab189a700e001d12a5014e080292517b75e0ca53ea86a039dc7/tox-4.0.18-py3-none-any.whl", hash = "sha256:2e3fa6d1b5cc09a971848e36d33bea64120dba9009cad5bff1fa8f6a5f367373"},
 ]
 "tox-pdm 0.6.1" = [
     {url = "https://files.pythonhosted.org/packages/57/42/c437d69c3b884c58027999e524c91716ac355048284be771d810d80ceed1/tox-pdm-0.6.1.tar.gz", hash = "sha256:952ea67f2ec891f11eb00749f63fc0f980384435ca782c448d154390f9f42f5e"},

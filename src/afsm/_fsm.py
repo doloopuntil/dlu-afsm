@@ -1,34 +1,27 @@
 """
 This module defines the business logic for a finite state machine.
 """
+from __future__ import annotations
 
 from dataclasses import dataclass
-from enum import Enum, unique
 from functools import wraps
-from typing import Any, Callable, Generic, Iterable, Optional, TypeVar, Union, final, overload
+from typing import Any, Callable, Generic, Iterable, Optional, TypeVar, final, overload
 
-from ._state import State, StateError
+from ._state import State, StateError, StateField
 
 _State = TypeVar("_State", bound="State")
 _Result = TypeVar("_Result")
 _ErrorResult = TypeVar("_ErrorResult")
 
 try:
-    dataclass(eq=False, frozen=True, slots=True)  # type: ignore[call-overload]
+    dataclass(eq=False, frozen=True, slots=True)  # type: ignore[call-overload] # pylint: disable=unexpected-keyword-arg
     _is_slotted = {"slots": True}
 except TypeError:  # Python < 3.10 does not support slotted dataclasses
     _is_slotted = {}
 
 
-@unique
-class _StateField(Enum):
-    STATE = "_state"
-    INITIAL_STATE = "_initial_state"
-    RETURN_VALUES = "_return_values"
-
-
 @final
-@dataclass(eq=False, frozen=True, **_is_slotted)
+@dataclass(eq=False, frozen=True, **_is_slotted)  # pylint: disable=unexpected-keyword-arg
 class Transition(Generic[_ErrorResult]):
     """
     A decorator that ensures an instance of a class derived from :class:`StateMixin` is in an expected state before
@@ -55,7 +48,7 @@ class Transition(Generic[_ErrorResult]):
         A state-checking method with the same declaration as the decorated method.
     """
 
-    from_: Union[Optional[State], Iterable[State]] = None
+    from_: Optional[State] | Iterable[State] = None
     to_: Optional[State] = None
     is_idempotent: bool = False
     on_error: Optional[Callable[..., _ErrorResult]] = None
@@ -70,14 +63,14 @@ class Transition(Generic[_ErrorResult]):
 
     def __call__(self, method: Any) -> Any:
         # Cache values and method access calls at the outset for speed.
-        state_attr = _StateField.STATE.value
-        ret_values_attr = _StateField.RETURN_VALUES.value
+        state_attr = StateField.STATE.value
+        ret_values_attr = StateField.RETURN_VALUES.value
         expected_states = frozenset(
             self.from_ if isinstance(self.from_, Iterable) else [self.from_] if self.from_ else []
         )
 
         @wraps(method)
-        def transitioning_method(instance: Any, *args: Any, **kwargs: Any) -> Union[_Result, _ErrorResult]:
+        def transitioning_method(instance: Any, *args: Any, **kwargs: Any) -> _Result | _ErrorResult:
             current_state = getattr(instance, state_attr)
 
             # If the method is marked as idempotent with respect to the new state, and the new state has already
@@ -91,7 +84,7 @@ class Transition(Generic[_ErrorResult]):
 
             # Call the decorated method and store the result to be later returned by idempotent methods.
             try:
-                result: Union[_Result, _ErrorResult]
+                result: _Result | _ErrorResult
                 result = getattr(instance, ret_values_attr)[method] = method(instance, *args, **kwargs)
 
             except Exception as exception:  # pylint: disable=broad-except
@@ -115,11 +108,11 @@ class StateMixin:
     passed in the class definition statement.
     """
 
-    __slots__ = (_StateField.STATE.value, _StateField.RETURN_VALUES.value)
+    __slots__ = (StateField.STATE.value, StateField.RETURN_VALUES.value)
 
     @classmethod
     def __init_subclass__(cls, **kwargs: Any) -> None:
-        initial_state_attr = _StateField.INITIAL_STATE.value
+        initial_state_attr = StateField.INITIAL_STATE.value
 
         # Retrieve the initial state stored in the original class when `attrs` or `dataclass` is replacing the original
         # class with its slotted version, see https://www.attrs.org/en/stable/glossary.html#term-slotted-classes.
@@ -127,7 +120,7 @@ class StateMixin:
 
         # Store the initial state on the class. The state is either specified in `kwargs` or it is the state originally
         # stored in the class `attrs` or `dataclass` is replacing.
-        setattr(cls, initial_state_attr, kwargs.pop(initial_state_attr[1:], initial_state))
+        setattr(cls, initial_state_attr, kwargs.pop("initial_state", initial_state))
 
         super().__init_subclass__(**kwargs)
 
@@ -136,7 +129,7 @@ class StateMixin:
 
         # Use `object.__setattr__()` for compatibility with frozen/immutable `attrs` or `dataclass` classes.
         # See https://www.attrs.org/en/stable/init.html#post-init.
-        object.__setattr__(instance, _StateField.STATE.value, getattr(cls, _StateField.INITIAL_STATE.value))
-        object.__setattr__(instance, _StateField.RETURN_VALUES.value, {})
+        object.__setattr__(instance, StateField.STATE.value, getattr(cls, StateField.INITIAL_STATE.value))
+        object.__setattr__(instance, StateField.RETURN_VALUES.value, {})
 
         return instance

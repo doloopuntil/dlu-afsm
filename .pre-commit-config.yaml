@@ -1,5 +1,5 @@
-# Use pre-commit hooks to identify issues before code submissions. See https://pre-commit.com for more details and
-# https://pre-commit.com/hooks.html for hook details.
+# Use pre-commit hooks to identify issues before code submissions, see https://pre-commit.com
+# For hook configuration details, see https://pre-commit.com/hooks.html
 
 default_stages:
   - commit
@@ -134,7 +134,7 @@ repos:
       - id: analyse-code-vulnerabilities
         name: "\U000026cf\ufe0f  Analyse - Python code vulnerabilities (bandit)"
         language: script
-        entry: .venv/bin/bandit -c pyproject.toml
+        entry: .venv/bin/bandit --configfile pyproject.toml
         require_serial: true
         types_or:
           - python
