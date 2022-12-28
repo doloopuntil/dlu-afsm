@@ -11,6 +11,14 @@ repos:
   - repo: local
 
     hooks:
+      - id: check-dependency-lock
+        name: "\U0001f512\ufe0f Prepare - Dependency lock file"
+        language: system
+        entry: pdm lock --check
+        files: ^pyproject.toml$
+        pass_filenames: false
+        fail_fast: true
+
       - id: check-yaml
         name: "\U00002705\ufe0f Check - YAML file syntax"
         language: script
@@ -99,16 +107,6 @@ repos:
           - pyi
           - rst
 
-      - id: check-dependency-lock
-        name: "\U0001f512\ufe0f Check - Dependency lock file"
-        language: system
-        entry: pdm lock --check
-        files: ^pyproject.toml$
-        pass_filenames: false
-        fail_fast: true
-        stages:
-          - push
-
       - id: analyse-code-smells
         name: "\U0001f443\ufe0f Analyse - Python code smells (pylint)"
         language: script
@@ -117,8 +115,6 @@ repos:
         types_or:
           - python
           - pyi
-        stages:
-          - push
 
       - id: analyse-code-typing
         name: "\U0001f4d8\ufe0f Analyse - Python code typing (mypy)"
@@ -128,8 +124,6 @@ repos:
         types_or:
           - python
           - pyi
-        stages:
-          - push
 
       - id: analyse-code-vulnerabilities
         name: "\U000026cf\ufe0f  Analyse - Python code vulnerabilities (bandit)"
@@ -139,16 +133,11 @@ repos:
         types_or:
           - python
           - pyi
-        stages:
-          - push
 
       - id: validate-build-test
-        name: "\U0001f680\ufe0f Validate – Package build and test (tox and pytest)"
+        name: "\U0001f680\ufe0f Test – Package build and validation (tox and pytest)"
         language: script
         entry: .venv/bin/tox --parallel
         pass_filenames: false
-        types_or:
+        types:
           - python
-          - pyi
-        stages:
-          - push
