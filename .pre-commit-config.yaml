@@ -7,45 +7,47 @@ default_stages:
 default_install_hook_types:
   - pre-commit
   - post-commit
+  - pre-push
 
+# Use pre-commit hooks installed in the project's virtual environment via ``repo: local`` in combination with
+# ``language: script`` and ``entry: .venv/bin/<script>``. Scripts execute faster than equivalent ones specified using
+# ``language: system`` and ``entry: <package-manager> run <script>`` as they side-step the package manager's overhead.
 repos:
-  # Use pre-commit hooks installed in the project's virtual environment via ``repo: local`` in combination with
-  # ``language: script`` and ``entry: .venv/bin/<script>``. Scripts execute faster than equivalent ones specified using
-  # ``language: system`` and ``entry: <package-manager> run <script>`` as they side-step the package manager's overhead.
-  - repo: local
 
+  # Pre-commit hooks
+  - repo: local
     hooks:
       - id: check-dependency-lock
-        name: "\U0001f512\ufe0f Prepare - Dependency lock file"
+        name: "\U0001F512\uFE0F Prepare - Dependency lock file"
         language: system
         entry: pdm lock --check
-        files: ^pyproject.toml$
+        files: ^pyproject\.toml$
         pass_filenames: false
         fail_fast: true
 
       - id: check-yaml-syntax
-        name: "\U00002705\ufe0f Check - YAML file syntax"
+        name: "\U00002705\uFE0F Check - YAML file syntax"
         language: script
         entry: .venv/bin/check-yaml
         types:
           - yaml
 
       - id: check-toml-syntax
-        name: "\U00002705\ufe0f Check - TOML file syntax"
+        name: "\U00002705\uFE0F Check - TOML file syntax"
         language: script
         entry: .venv/bin/check-toml
         types:
           - toml
 
       - id: check-rst-syntax
-        name: "\U00002705\ufe0f Check - RST file syntax"
+        name: "\U00002705\uFE0F Check - RST file syntax"
         language: script
         entry: .venv/bin/rstcheck
         types:
           - rst
 
       - id: check-rst-backticks
-        name: "\U00002611\ufe0f  Check - RST code within two backticks"
+        name: "\U00002611\uFE0F  Check - RST code within two backticks"
         entry: '^(?!    ).*(^| )`[^`]+`([^_]|$)'
         language: pygrep
         types_or:
@@ -53,7 +55,7 @@ repos:
           - rst
 
       - id: check-rst-inline-touching-normal
-        name: "\U00002611\ufe0f  Check - RST inline code next to normal text"
+        name: "\U00002611\uFE0F  Check - RST inline code next to normal text"
         entry: '\w``\w'
         language: pygrep
         types_or:
@@ -61,7 +63,7 @@ repos:
           - rst
 
       - id: check-rst-directive-colons
-        name: "\U00002611\ufe0f  Check - RST directives end with two colons"
+        name: "\U00002611\uFE0F  Check - RST directives end with two colons"
         entry: '^\s*\.\. [a-z]+:$'
         language: pygrep
         types_or:
@@ -69,12 +71,12 @@ repos:
           - rst
 
       - id: check-case-conflict
-        name: "\U0001f524\ufe0f Check - Filename case conflicts"
+        name: "\U0001F524\uFE0F Check - Filename case conflicts"
         language: script
         entry: .venv/bin/check-case-conflict
 
       - id: check-test-names
-        name: "\U0001f524\ufe0f Check - Filename for tests"
+        name: "\U0001F524\uFE0F Check - Filename for tests"
         language: script
         entry: .venv/bin/name-tests-test
         args:
@@ -82,33 +84,33 @@ repos:
         files: (^|/)tests/.+\.py$
 
       - id: check-large-files
-        name: "\U0001f40b\ufe0f Check - No large files"
+        name: "\U0001F40B\uFE0F Check - No large files"
         language: script
         entry: .venv/bin/check-added-large-files
 
       - id: fix-trailing-whitespaces
-        name: "\U0001f51a\ufe0f Fix - Trailing whitespaces"
+        name: "\U0001F51A\uFE0F Fix - Trailing whitespaces"
         language: script
         entry: .venv/bin/trailing-whitespace-fixer
         types:
           - text
 
       - id: fix-mixed-line-ending
-        name: "\U000021a9\ufe0f  Fix - Mixed line endings"
+        name: "\U000021A9\uFE0F  Fix - Mixed line endings"
         language: script
         entry: .venv/bin/mixed-line-ending
         args:
           - "--fix=lf"
 
       - id: fix-end-of-file
-        name: "\U0001f195\ufe0f Fix - Single-newline file ending"
+        name: "\U0001F195\uFE0F Fix - Single-newline file ending"
         language: script
         entry: .venv/bin/end-of-file-fixer
         types:
           - text
 
       - id: fix-import-order
-        name: "\U0001f9e1\ufe0f Fix - Import order (isort)"
+        name: "\U0001F9E1\uFE0F Fix - Import order (isort)"
         language: script
         entry: .venv/bin/isort
         require_serial: true
@@ -117,7 +119,7 @@ repos:
           - pyi
 
       - id: fix-code-style
-        name: "\U0001f5a4\ufe0f Fix - Code style (black)"
+        name: "\U0001F5A4\uFE0F Fix - Code style (black)"
         language: script
         entry: .venv/bin/black
         require_serial: true
@@ -126,7 +128,7 @@ repos:
           - pyi
 
       - id: fix-docs-code-style
-        name: "\U00002712\ufe0f  Fix - Code style in documentation (blacken)"
+        name: "\U00002712\uFE0F  Fix - Code style in documentation (blacken)"
         language: script
         entry: .venv/bin/blacken-docs
         require_serial: true
@@ -136,7 +138,7 @@ repos:
           - rst
 
       - id: inspect-code-smells
-        name: "\U0001f443\ufe0f Inspect - Code smells (pylint)"
+        name: "\U0001F443\uFE0F Inspect - Code smells (pylint)"
         language: script
         entry: .venv/bin/pylint
         require_serial: true
@@ -145,7 +147,7 @@ repos:
           - pyi
 
       - id: inspect-code-typing
-        name: "\U0001f4d8\ufe0f Inspect - Code typing (mypy)"
+        name: "\U0001F4D0\uFE0F Inspect - Code typing (mypy)"
         language: script
         entry: .venv/bin/mypy
         require_serial: true
@@ -154,7 +156,7 @@ repos:
           - pyi
 
       - id: inspect-code-vulnerabilities
-        name: "\U0001f50d\ufe0f Inspect - Code vulnerabilities (bandit)"
+        name: "\U0001F6E1\uFE0F Inspect - Code vulnerabilities (bandit)"
         language: script
         entry: .venv/bin/bandit --configfile pyproject.toml
         require_serial: true
@@ -163,47 +165,56 @@ repos:
           - pyi
 
       - id: inspect-dependency-vulnerabilities
-        name: "\U0001f50d\ufe0f Inspect - Dependency vulnerabilities (pip-audit)"
+        name: "\U0001F6E1\uFE0F Inspect - Dependency vulnerabilities (pip-audit)"
         language: script
         entry: .venv/bin/pip-audit .
-        files: ^pdm.lock$
+        files: ^pdm\.lock$
         pass_filenames: false
 
+    # Pre-push hooks
+  - repo: local
+    hooks:
       - id: test-built-package
-        name: "\U0001f381\ufe0f Package – Build and validation (tox and pytest)"
+        name: "\U0001F381\uFE0F Package – Build and validation (tox and pytest)"
         language: script
         entry: .venv/bin/tox --parallel
         pass_filenames: false
-        types:
+        fail_fast: true
+        types_or:
           - python
+          - pyi
+        stages:
+          - push
 
-  - repo: local
+      - id: measure-code-coverage
+        name: "\U0001F4C8\uFE0F Measure – Code coverage (coverage)"
+        language: script
+        entry: .venv/bin/coverage report --show-missing
+        pass_filenames: false
+        fail_fast: true
+        verbose: true
+        stages:
+          - push
 
-    hooks:
-      - id: measure-build-cache
-        name: "\U0001f4C8\ufe0f Measure – Code complexity cache update (wily)"
+      - id: measure-complexity-build-cache
+        name: "\U0001F4C8\uFE0F Measure – Code complexity cache update (wily)"
         language: script
         entry: .venv/bin/wily --cache .wily_cache build src/
+        pass_filenames: false
         always_run: true
+        fail_fast: true
         stages:
-          - post-commit
+          - push
 
-      - id: measure-show-trend
-        name: "\U0001f4C8\ufe0f Measure – Code complexity trend (wily)"
+      - id: measure-complexity-show-trend
+        name: "\U0001F4C8\uFE0F Measure – Code complexity trend (wily)"
         language: script
         entry: .venv/bin/wily --cache .wily_cache diff src/
           --no-detail
           --metrics cyclomatic.complexity,maintainability.mi,halstead.difficulty,raw.loc
-        verbose: true
-        always_run: true
-        stages:
-          - post-commit
-
-      - id: measure-code coverage
-        name: "\U0001f4C8\ufe0f Measure – Code coverage (coverage)"
-        language: script
-        entry: .venv/bin/coverage report --show-missing
+          --revision origin/HEAD
+        pass_filenames: false
         always_run: true
         verbose: true
         stages:
-          - post-commit
+          - push

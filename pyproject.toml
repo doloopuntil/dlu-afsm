@@ -2,7 +2,6 @@
 name = "dlu-afsm"
 description = "Simple decorator-based finite state machine library, compatible with attrs and dataclasses."
 authors = [
-    {name = "Daniele Masato"},
     {name = "Daniele Masato", email = "masato.daniele@gmail.com"}
 ]
 license = {file = "LICENSE"}
@@ -21,7 +20,7 @@ classifiers = [
     "Intended Audience :: Developers",
     "Topic :: Software Development :: Libraries",
 ]
-requires-python = ">= 3.8"
+requires-python = ">=3.8"
 dependencies = []
 dynamic = ["version"]
 
@@ -52,7 +51,7 @@ qa = [
     "blacken-docs>=1.12",
     "isort>=5.0",
     "pylint>=2.15",
-    "mypy>=0",
+    "mypy>=1.0",
     "bandit[toml]>=1.7",
     "wily>=1.24",
     "pip-audit>=2.4",
@@ -66,14 +65,30 @@ test = [
     "attrs>=21",  # Modern attrs APIs, see https://www.attrs.org/en/stable/names.html
 ]
 
-# Continuous integration dependencies, pre-committ uses these to perform code validation before a push
+# Continuous integration dependencies, pre-commit uses these to perform code validation before a push
 ci = [
     "tox>=4.0.10",
-    "tox-pdm",  # tox plugin to delegate dependency management to PDM
+    "tox-pdm>=0.6",  # tox plugin to delegate dependency management to PDM
+]
+
+# Documentation generation dependencies
+doc = [
+    "sphinx>=5.3",
+    "furo>=2023.3.23",
+    "sphinx-autodoc-typehints>=1.21",
+    "sphinx-copybutton>=0.5",
 ]
 
 [tool.pdm.resolution.overrides]
 radon = ">=5.1"
+
+[tool.pdm.scripts]
+test.call = "tox:main(sys.argv[1:])"
+doctest.call = "sphinx.cmd.build:main((*sys.argv[1:],'-b', 'doctest', 'docs', 'build/htmldocs'))"
+dochtml.call = "sphinx.cmd.build:main((*sys.argv[1:], '-b', 'html', 'docs', 'build/htmldocs'))"
+
+[tool.rstcheck]
+ignore_directives = ["doctest", "automodule", "autoclass"]
 
 [tool.black]
 ## Use black for automated code formatting, see https://black.readthedocs.io/
@@ -182,7 +197,7 @@ legacy_tox_ini = """
     [testenv:py{38,39,310,311,py3}]
     description = Run tests for {py_impl}-{py_dot_ver}
     depends = clean
-    commands = coverage run --parallel-mode --module pytest --import-mode=importlib tests
+    commands = coverage run --parallel-mode --module pytest --import-mode importlib {posargs} tests
 
     [testenv:report]
     description = Generate coverage report

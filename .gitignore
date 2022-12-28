@@ -17,7 +17,7 @@ build/
 dist/
 
 # Local metadata (PDM, macOS, etc.)
-.pdm.toml
+.pdm-python
 .DS_Store
 
 # PyCharm project settings

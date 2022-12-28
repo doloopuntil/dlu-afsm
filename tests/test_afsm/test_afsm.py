@@ -219,7 +219,7 @@ class TestFiniteStateMachine:
 
             @class_decorator
             class AFSM(StateMixin, initial_state=_State.INITIAL):
-                @transition(from_=_State.INITIAL, to_=_State.NEXT, on_error=handle_exception)
+                @transition(from_=_State.INITIAL, to_=_State.NEXT, on_exception=handle_exception)
                 def to_next_state(self, *args: str, **kwargs: str) -> str:
                     raise exception
 
