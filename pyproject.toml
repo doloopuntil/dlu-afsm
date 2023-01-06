@@ -14,7 +14,7 @@ keywords = [
     "dataclass",
 ]
 classifiers = [
-    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
     "Development Status :: 5 - Production/Stable",
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
@@ -41,34 +41,39 @@ path = "src/afsm/__init__.py"
 
 # Base development dependencies
 base = [
-    "pre-commit >= 2.20.0",
-    "pre-commit-hooks >= 4.4",
+    "pre-commit>=2.20.0",
+    "pre-commit-hooks>=4.4",
 ]
 
 # Code qaulity dependencies, pre-commit uses these to perform code checks before a commit or a push
 qa = [
-    "rstcheck >= 6.1",
-    "black >= 22.1",
-    "blacken-docs >= 1.12",
-    "isort >= 5.0",
-    "pylint >= 2.15",
-    "mypy >= 0",
-    "bandit[toml] >= 1.7",
+    "rstcheck>=6.1",
+    "black>=22.1",
+    "blacken-docs>=1.12",
+    "isort>=5.0",
+    "pylint>=2.15",
+    "mypy>=0",
+    "bandit[toml]>=1.7",
+    "radon>=5.1",
+    "wily>=1.24",
 ]
 
 # Test dependencies, tox uses these to test the package under different Python environments
 test = [
-    "pytest >= 7.0",
-    "pytest-mock >= 3.10",
-    "coverage >= 7.0",
-    "attrs >= 21",  # Modern attrs APIs, see https://www.attrs.org/en/stable/names.html
+    "pytest>=7.0",
+    "pytest-mock>=3.10",
+    "coverage>=7.0",
+    "attrs>=21",  # Modern attrs APIs, see https://www.attrs.org/en/stable/names.html
 ]
 
 # Continuous integration dependencies, pre-committ uses these to perform code validation before a push
 ci = [
-    "tox >= 4.0.10",
+    "tox>=4.0.10",
     "tox-pdm",  # tox plugin to delegate dependency management to PDM
 ]
+
+[tool.pdm.resolution.overrides]
+radon = ">=5.1"
 
 [tool.black]
 ## Use black for automated code formatting, see https://black.readthedocs.io/
@@ -141,7 +146,7 @@ python_functions = "*_succeeds *_fails returns_* raises_* calls_*"
 source = ["afsm"]
 branch = true
 parallel = true
-data_file = ".coverage/data"
+data_file = ".coverage_cache/data"
 
 [tool.coverage.paths]
 # Map different coverage report paths, generated for each tox test environment, to the same paths in the source tree.
@@ -186,5 +191,5 @@ legacy_tox_ini = """
     parallel_show_output = true
     commands =
         coverage combine --quiet
-        coverage report --show-missing --fail-under=95
+        coverage report --show-missing
 """

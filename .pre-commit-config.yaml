@@ -4,6 +4,10 @@
 default_stages:
   - commit
 
+default_install_hook_types:
+  - pre-commit
+  - post-commit
+
 repos:
   # Use pre-commit hooks installed in the project's virtual environment via ``repo: local`` in combination with
   # ``language: script`` and ``entry: .venv/bin/<script>``. Scripts execute faster than equivalent ones specified using
@@ -73,14 +77,14 @@ repos:
           - "--fix=lf"
 
       - id: fix-end-of-file
-        name: "\U00002702\ufe0f  Fix - Single-newline file ending"
+        name: "\U0001f195\ufe0f Fix - Single-newline file ending"
         language: script
         entry: .venv/bin/end-of-file-fixer
         types:
           - text
 
       - id: fix-import-order
-        name: "\U0001f9e1\ufe0f Fix - Python import order (isort)"
+        name: "\U0001f9e1\ufe0f Fix - Import order (isort)"
         language: script
         entry: .venv/bin/isort
         require_serial: true
@@ -89,7 +93,7 @@ repos:
           - pyi
 
       - id: fix-code-style
-        name: "\U0001f5a4\ufe0f Fix - Python code style (black)"
+        name: "\U0001f5a4\ufe0f Fix - Code style (black)"
         language: script
         entry: .venv/bin/black
         require_serial: true
@@ -98,7 +102,7 @@ repos:
           - pyi
 
       - id: fix-docs-code-style
-        name: "\U00002712\ufe0f  Fix - Python docs code style (blacken)"
+        name: "\U00002712\ufe0f  Fix - Code style in documentation (blacken)"
         language: script
         entry: .venv/bin/blacken-docs
         require_serial: true
@@ -107,8 +111,8 @@ repos:
           - pyi
           - rst
 
-      - id: analyse-code-smells
-        name: "\U0001f443\ufe0f Analyse - Python code smells (pylint)"
+      - id: inspect-code-smells
+        name: "\U0001f443\ufe0f Inspect - Code smells (pylint)"
         language: script
         entry: .venv/bin/pylint
         require_serial: true
@@ -116,8 +120,8 @@ repos:
           - python
           - pyi
 
-      - id: analyse-code-typing
-        name: "\U0001f4d8\ufe0f Analyse - Python code typing (mypy)"
+      - id: inspect-code-typing
+        name: "\U0001f4d8\ufe0f Inspect - Code typing (mypy)"
         language: script
         entry: .venv/bin/mypy
         require_serial: true
@@ -125,8 +129,8 @@ repos:
           - python
           - pyi
 
-      - id: analyse-code-vulnerabilities
-        name: "\U000026cf\ufe0f  Analyse - Python code vulnerabilities (bandit)"
+      - id: inspect-code-vulnerabilities
+        name: "\U0001f50d\ufe0f Inspect - Code vulnerabilities (bandit)"
         language: script
         entry: .venv/bin/bandit --configfile pyproject.toml
         require_serial: true
@@ -139,5 +143,25 @@ repos:
         language: script
         entry: .venv/bin/tox --parallel
         pass_filenames: false
+        verbose: true
         types:
           - python
+
+      - id: measure-build-cache
+        name: "\U0001f4C8\ufe0f Measure – Code complexity cache update (wily)"
+        language: script
+        entry: .venv/bin/wily --cache .wily_cache build src/
+        always_run: true
+        stages:
+          - post-commit
+
+      - id: measure-show-trend
+        name: "\U0001f4C8\ufe0f Measure – Code complexity trend (wily)"
+        language: script
+        entry: .venv/bin/wily --cache .wily_cache diff src/
+          --metrics cyclomatic.complexity,maintainability.mi,halstead.difficulty,raw.loc
+          --revision HEAD~1
+        verbose: true
+        always_run: true
+        stages:
+          - post-commit

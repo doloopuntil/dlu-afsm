@@ -1,24 +1,10 @@
-# pyenv configuration
+# Virtual environment configuration
 .python-version
-
-# PDM virtual environemnt
 .venv/
 
-# Byte-compiled and optimised sources
+# Caches (byte-compiled and optimised sources, mypy, pytest, coverage, etc.)
 __pycache__/
-*.py[co]
-
-# PDM local metadata
-.pdm.toml
-
-# mypy type-checking cache
-.mypy_cache/
-
-# Unit test reports
-.pytest_cache/
-
-# Coverage reports
-.coverage/
+.*_cache/
 
 # tox testing environments
 .tox/
@@ -30,8 +16,9 @@ docs/_build/
 build/
 dist/
 
-# macOS metadata
+# Local metadata (PDM, macOS, etc.)
+.pdm.toml
 .DS_Store
 
-# Idea project settings
+# PyCharm project settings
 .idea/
