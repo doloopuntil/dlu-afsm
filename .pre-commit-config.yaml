@@ -138,7 +138,14 @@ repos:
           - python
           - pyi
 
-      - id: validate-build-test
+      - id: inspect-dependency-vulnerabilities
+        name: "\U0001f50d\ufe0f Inspect - Dependency vulnerabilities (pip-audit)"
+        language: script
+        entry: .venv/bin/pip-audit .
+        files: ^pdm.lock$
+        pass_filenames: false
+
+      - id: test-built-package
         name: "\U0001f680\ufe0f Test – Package build and validation (tox and pytest)"
         language: script
         entry: .venv/bin/tox --parallel
