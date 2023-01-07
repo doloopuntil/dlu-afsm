@@ -17,8 +17,8 @@
 >>>         print("Changing state")
 """
 
-from ._fsm import StateMixin, Transition as transition
-from ._state import State, StateError
+from afsm._fsm import StateMixin, Transition as transition
+from afsm._state import State, StateError
 
 __version__ = "1.0.0"
 __all__ = ["StateMixin", "State", "StateError", "transition"]
