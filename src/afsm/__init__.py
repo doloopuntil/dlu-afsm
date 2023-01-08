@@ -1,5 +1,5 @@
 """
-`dlu-afsm` is a simple decorator-based finite state machine library, compatible with `attrs <https://attrs.org>`_ and
+``dlu-afsm`` is a simple decorator-based finite state machine library, compatible with `attrs <https://attrs.org>`_ and
 `dataclasses <https://docs.python.org/3/library/dataclasses.html>`_.
 
 >>> from dataclasses import dataclass

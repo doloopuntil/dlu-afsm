@@ -23,25 +23,49 @@ repos:
         pass_filenames: false
         fail_fast: true
 
-      - id: check-yaml
+      - id: check-yaml-syntax
         name: "\U00002705\ufe0f Check - YAML file syntax"
         language: script
         entry: .venv/bin/check-yaml
         types:
           - yaml
 
-      - id: check-toml
+      - id: check-toml-syntax
         name: "\U00002705\ufe0f Check - TOML file syntax"
         language: script
         entry: .venv/bin/check-toml
         types:
           - toml
 
-      - id: check-rst
+      - id: check-rst-syntax
         name: "\U00002705\ufe0f Check - RST file syntax"
         language: script
         entry: .venv/bin/rstcheck
         types:
+          - rst
+
+      - id: check-rst-backticks
+        name: "\U00002611\ufe0f  Check - RST code within two backticks"
+        entry: '^(?!    ).*(^| )`[^`]+`([^_]|$)'
+        language: pygrep
+        types_or:
+          - python
+          - rst
+
+      - id: check-rst-inline-touching-normal
+        name: "\U00002611\ufe0f  Check - RST inline code next to normal text"
+        entry: '\w``\w'
+        language: pygrep
+        types_or:
+          - python
+          - rst
+
+      - id: check-rst-directive-colons
+        name: "\U00002611\ufe0f  Check - RST directives end with two colons"
+        entry: '^\s*\.\. [a-z]+:$'
+        language: pygrep
+        types_or:
+          - python
           - rst
 
       - id: check-case-conflict
@@ -146,14 +170,16 @@ repos:
         pass_filenames: false
 
       - id: test-built-package
-        name: "\U0001f680\ufe0f Test – Package build and validation (tox and pytest)"
+        name: "\U0001f381\ufe0f Package – Build and validation (tox and pytest)"
         language: script
         entry: .venv/bin/tox --parallel
         pass_filenames: false
-        verbose: true
         types:
           - python
 
+  - repo: local
+
+    hooks:
       - id: measure-build-cache
         name: "\U0001f4C8\ufe0f Measure – Code complexity cache update (wily)"
         language: script
@@ -166,9 +192,18 @@ repos:
         name: "\U0001f4C8\ufe0f Measure – Code complexity trend (wily)"
         language: script
         entry: .venv/bin/wily --cache .wily_cache diff src/
+          --no-detail
           --metrics cyclomatic.complexity,maintainability.mi,halstead.difficulty,raw.loc
-          --revision HEAD~1
         verbose: true
         always_run: true
+        stages:
+          - post-commit
+
+      - id: measure-code coverage
+        name: "\U0001f4C8\ufe0f Measure – Code coverage (coverage)"
+        language: script
+        entry: .venv/bin/coverage report --show-missing
+        always_run: true
+        verbose: true
         stages:
           - post-commit
